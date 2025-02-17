@@ -49,8 +49,47 @@ public class AccountFundTransfer implements UserService {
 
 		int menuChoice = scanner.nextInt();
 		if (menuChoice == 1) {
-			this.logout();
-		} else {
+			if(activeAcc == 1) {
+				this.logout(user1);
+			}else if(activeAcc == 2) {
+				this.logout(user2);
+			}else {
+				this.login();
+				
+			}
+		}else if(menuChoice == 2){
+			if(activeAcc != 0) {
+				if(activeAcc == 1) {
+					this.accountInfo(user1);
+					
+				}else if(activeAcc == 2) {
+					this.accountInfo(user2);
+				}
+			}else {
+				this.createAccount();
+			}
+			
+		}else if(menuChoice == 3) {
+			if(activeAcc != 0) {
+				if(activeAcc == 1) {
+					print(user1.getHistory());
+					
+				}else if(activeAcc == 2) {
+					print(user2.getHistory());
+				}
+				this.mainMenu();
+				
+			}else {
+				this.createAccount();
+			}
+		}else if(menuChoice == 4) {
+			if(activeAcc == 1) {
+				this.FundTransfer(100, 123456, user1, user2);
+			}
+			
+		}
+		
+		 else {
 			this.createAccount();
 		}
 
@@ -65,7 +104,7 @@ public class AccountFundTransfer implements UserService {
 			System.out.println("Enter 6 digit pin !!!");
 			int pin = scanner.nextInt();
 			if (ValidateUser.verifyPin(pin, user1)) {
-				
+
 				this.activeAcc = 1;
 				System.out.println("Login successfull...!!");
 				this.createLog(user1, "Account Login");
@@ -257,7 +296,7 @@ public class AccountFundTransfer implements UserService {
 	}
 
 	@Override
-	public void logout() {
+	public void logout(User user) {
 		// TODO Auto-generated method stub
 
 	}
@@ -275,14 +314,57 @@ public class AccountFundTransfer implements UserService {
 	}
 
 	@Override
-	public void FundTransfer() {
-		// TODO Auto-generated method stub
+	public void FundTransfer(int amount, int pin, User fromUser, User toUser) {
+		if (ValidateUser.verifyPin(pin, fromUser)) {
+			if (amount <= fromUser.getAccountBalance()) {
+
+				toUser.setAccountBalance(amount + toUser.getAccountBalance());
+				fromUser.setAccountBalance(fromUser.getAccountBalance() - amount);
+				print("----------[ Fund Transfer successfull ]----------");
+				System.out.println("!! Available balance =: " + fromUser.getAccountBalance());
+				this.createLog(fromUser, amount + " Transfered to " + toUser.getUserName());
+				this.createLog(toUser, amount + " Recieved from " + fromUser.getUserName());
+				this.mainMenu();
+
+			} else {
+				System.out.println(" Not Enough balance in account ");
+				System.out.println("--------------------------------");
+				this.mainMenu();
+
+			}
+
+		} else {
+			System.out.println("Your pin is incorrect");
+		}
 
 	}
 
 	@Override
-	public void withdraw() {
-		// TODO Auto-generated method stub
+	public void withdraw(User user) {
+
+		System.out.println("Enter amount");
+		int amount = scanner.nextInt();
+		System.out.println("Enter Pin");
+
+		int pin = scanner.nextInt();
+
+		if (ValidateUser.verifyPin(pin, user)) {
+			if (amount <= user.getAccountBalance()) {
+				user.setAccountBalance(user.getAccountBalance() - amount);
+				print("----------[ Withdraw successfull ]----------");
+				System.out.println("!! Available balance =: " + user.getAccountBalance());
+				
+				this.createLog(user, amount + " withdraw");
+				this.mainMenu();
+
+			} else {
+				System.out.println("Not enough account balance !!!");
+			}
+
+		} else {
+			System.out.println("Pin is not valid");
+			this.mainMenu();
+		}
 
 	}
 
