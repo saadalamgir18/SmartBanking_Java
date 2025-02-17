@@ -49,7 +49,7 @@ public class AccountFundTransfer implements UserService {
 
 		int menuChoice = scanner.nextInt();
 		if (menuChoice == 1) {
-			this.login();
+			this.logout();
 		} else {
 			this.createAccount();
 		}
@@ -58,12 +58,57 @@ public class AccountFundTransfer implements UserService {
 
 	@Override
 	public void login() {
-		// TODO Auto-generated method stub
+		System.out.println("Welcome to the bank.");
+		System.out.println("Enter your bank acoount number");
+		String accNumber = scanner.next();
+		if (accNumber.equals(user1.getAccountNumber())) {
+			System.out.println("Enter 6 digit pin !!!");
+			int pin = scanner.nextInt();
+			if (ValidateUser.verifyPin(pin, user1)) {
+				
+				this.activeAcc = 1;
+				System.out.println("Login successfull...!!");
+				this.createLog(user1, "Account Login");
+				this.mainMenu();
+
+			} else {
+				System.out.println("Wrong pin try again...!");
+				this.login();
+
+			}
+
+		} else if (accNumber.equalsIgnoreCase(user2.getAccountNumber())) {
+
+			System.out.println("Enter 6 digit pin !!!");
+			int pin = scanner.nextInt();
+			if (ValidateUser.verifyPin(pin, user2)) {
+				this.activeAcc = 2;
+
+				System.out.println("Login successfull 😊 ...!!");
+				this.createLog(user2, "Account Login");
+				this.mainMenu();
+
+			} else {
+				System.out.println("🚫 Wrong pin try again...!");
+				this.login();
+
+			}
+
+		}
 
 	}
 
 	@Override
 	public void createAccount() {
+
+		if (user1.getUserName() == null) {
+			user = 1;
+		} else if (user2.getUserName() == null) {
+			user = 2;
+		} else {
+			System.out.println("!! OOps only 2 user can be created.... ");
+		}
+
 		System.out.println("----------Fill Details to Continue-------");
 
 		System.out.println("=======| Enter Bank Name |=======");
@@ -131,17 +176,16 @@ public class AccountFundTransfer implements UserService {
 
 		System.out.println("=======| Enter Amount( > 0 ) you want to save |=======");
 		int amount = scanner.nextInt();
-		
-		if(amount < 0) {
+
+		if (amount < 0) {
 			print("!! Sorry you can not open an account with 0(Zero) balance !!");
 			createAccount();
-			
+
 		}
-			
 
 		System.out.println("=======| Create 6 Digit Pin |=======");
 		int pin = scanner.nextInt();
-		
+
 		if (!ValidateUser.checkLength(6, String.valueOf(pin), true)) {
 			print("!! Pin must be 6 digits !!");
 			createAccount();
@@ -151,20 +195,60 @@ public class AccountFundTransfer implements UserService {
 //		user1.setBankName(bankName);
 
 		System.out.println("=======| Generating 11 Digit Account Number |=======");
-		
-		String accNumber = Utils.generateAccNum();
-		
-		user1.setAccountNumber(accNumber);
-		user1.setUserName(name);
-		user1.setAccountBalance(amount);
-		user1.setBankName(bankName);
-		user1.setAccountPin(pin);
-		user1.setEmail(email);
-		user1.setAccountNumber(accNumber);
-		user1.setHistory(Utils.getTimeStamp());
-		user1.setIfscCode(ifsc);
-		user1.setMobile(mobile);
 
+		String accNumber = Utils.generateAccNum();
+
+		if (user == 1) {
+			user1.setAccountNumber(accNumber);
+			user1.setUserName(name);
+			user1.setAccountBalance(amount);
+			user1.setBankName(bankName);
+			user1.setAccountPin(pin);
+			user1.setEmail(email);
+			user1.setAccountNumber(accNumber);
+			user1.setHistory(Utils.getTimeStamp());
+			user1.setIfscCode(ifsc);
+			user1.setMobile(mobile);
+			user1.setType(accountType);
+
+			this.createLog(user1, " Account Created ");
+			this.accountInfo(user1);
+
+		} else {
+
+			user2.setAccountNumber(accNumber);
+			user2.setUserName(name);
+			user2.setAccountBalance(amount);
+			user2.setBankName(bankName);
+			user2.setAccountPin(pin);
+			user2.setEmail(email);
+			user2.setAccountNumber(accNumber);
+			user2.setHistory(Utils.getTimeStamp());
+			user2.setIfscCode(ifsc);
+			user2.setMobile(mobile);
+			user2.setType(accountType);
+
+			this.createLog(user2, " Account Created ");
+			this.accountInfo(user2);
+		}
+
+	}
+
+	private void accountInfo(User user) {
+		System.out.println("-----------*******-------------");
+		System.out.println("-----------***[ Account Created Successfully ]***-------------");
+		System.out.println("!! Account Detail !!");
+		System.out.println("!!~ Bank Name => " + user.getBankName());
+		System.out.println("!!~ Account Name => " + user.getUserName());
+		System.out.println("!!~ Account Email => " + user.getEmail());
+		System.out.println("!!~ Mobile Number => " + user.getMobile());
+		System.out.println("!!~ Account Number => " + user.getAccountNumber());
+		System.out.println("!!~ Account Balance => " + user.getAccountBalance());
+		System.out.println("!!~ Account Type => " + user.getType());
+		System.out.println("!!~ IFSC Code => " + user.getIfscCode());
+		System.out.println("!!~ Account Pin => " + user.getAccountPin());
+		print("-----------*******-------------");
+		this.mainMenu();
 	}
 
 	private void print(String s) {
@@ -205,6 +289,20 @@ public class AccountFundTransfer implements UserService {
 	@Override
 	public void changePin() {
 		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void createLog(User user, String msg) {
+		String history;
+		if (user.getHistory() == null) {
+			history = "";
+
+		} else {
+			history = user.getHistory();
+
+		}
+		user.setHistory(msg + " on " + Utils.getTimeStamp() + "\n" + history);
 
 	}
 

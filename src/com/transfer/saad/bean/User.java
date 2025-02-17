@@ -3,7 +3,7 @@ package com.transfer.saad.bean;
 import java.io.Serializable;
 
 public class User implements Serializable{
-	private String userName, email, ifscCode, bankName, mobile, accountNumber, history;
+	private String userName, email, ifscCode, bankName, mobile, accountNumber, history, type;
 	private int accountPin;
 	private double accountBalance;
 	
@@ -12,7 +12,7 @@ public class User implements Serializable{
 		super();
 	}
 	public User(String userName, String email, String ifscCode, String bankName, String mobile, String accountNumber,
-			String history, int accountPin, double accountBalance) {
+			String history, int accountPin, double accountBalance, String type) {
 		super();
 		this.userName = userName;
 		this.email = email;
@@ -23,6 +23,7 @@ public class User implements Serializable{
 		this.history = history;
 		this.accountPin = accountPin;
 		this.accountBalance = accountBalance;
+		this.type = type;
 	}
 	private static final long serialVersionUID = 1L;
 	public String getUserName() {
@@ -88,7 +89,13 @@ public class User implements Serializable{
 	public String toString() {
 		return "User [userName=" + userName + ", email=" + email + ", ifscCode=" + ifscCode + ", bankName=" + bankName
 				+ ", mobile=" + mobile + ", accountNumber=" + accountNumber + ", history=" + history + ", accountPin="
-				+ accountPin + ", accountBalance=" + accountBalance + "]";
+				+ accountPin + ", accountBalance=" + accountBalance + ", accountType=" + type + "]";
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	
