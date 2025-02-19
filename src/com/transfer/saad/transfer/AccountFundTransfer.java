@@ -49,47 +49,70 @@ public class AccountFundTransfer implements UserService {
 
 		int menuChoice = scanner.nextInt();
 		if (menuChoice == 1) {
-			if(activeAcc == 1) {
+			if (activeAcc == 1) {
 				this.logout(user1);
-			}else if(activeAcc == 2) {
+			} else if (activeAcc == 2) {
 				this.logout(user2);
-			}else {
+			} else {
 				this.login();
-				
+
 			}
-		}else if(menuChoice == 2){
-			if(activeAcc != 0) {
-				if(activeAcc == 1) {
+		} else if (menuChoice == 2) {
+			if (activeAcc != 0) {
+				if (activeAcc == 1) {
 					this.accountInfo(user1);
-					
-				}else if(activeAcc == 2) {
+
+				} else if (activeAcc == 2) {
 					this.accountInfo(user2);
 				}
-			}else {
+			} else {
 				this.createAccount();
 			}
-			
-		}else if(menuChoice == 3) {
-			if(activeAcc != 0) {
-				if(activeAcc == 1) {
+
+		} else if (menuChoice == 3) {
+			if (activeAcc != 0) {
+				if (activeAcc == 1) {
 					print(user1.getHistory());
-					
-				}else if(activeAcc == 2) {
+
+				} else if (activeAcc == 2) {
 					print(user2.getHistory());
 				}
 				this.mainMenu();
-				
-			}else {
+
+			} else {
 				this.createAccount();
 			}
-		}else if(menuChoice == 4) {
-			if(activeAcc == 1) {
-				this.FundTransfer(100, 123456, user1, user2);
+		} else if (menuChoice == 4) {
+			if (activeAcc == 1) {
+				this.checkAccount(user1, user2);
+//				this.FundTransfer(100, 123456, user1, user2);
+			}else {
+				this.checkAccount(user2, user1);
+				
+
+				
 			}
-			
+//			withdraw
+		} else if (menuChoice == 5) {
+			if (activeAcc == 1) {
+				this.withdraw(user1);
+
+			} else {
+				this.withdraw(user2);
+			}
+
+//			change pin
+		} else if (menuChoice == 6) {
+			if (activeAcc == 1) {
+				this.changePin(user1);
+
+			} else {
+				this.changePin(user2);
+			}
+
 		}
-		
-		 else {
+
+		else {
 			this.createAccount();
 		}
 
@@ -297,7 +320,10 @@ public class AccountFundTransfer implements UserService {
 
 	@Override
 	public void logout(User user) {
-		// TODO Auto-generated method stub
+		this.activeAcc = 1;
+		System.out.println("Logout successfull!! ");
+		this.createLog(user, "Account logout!!");
+		this.mainMenu();
 
 	}
 
@@ -335,6 +361,7 @@ public class AccountFundTransfer implements UserService {
 
 		} else {
 			System.out.println("Your pin is incorrect");
+			this.mainMenu();
 		}
 
 	}
@@ -353,7 +380,7 @@ public class AccountFundTransfer implements UserService {
 				user.setAccountBalance(user.getAccountBalance() - amount);
 				print("----------[ Withdraw successfull ]----------");
 				System.out.println("!! Available balance =: " + user.getAccountBalance());
-				
+
 				this.createLog(user, amount + " withdraw");
 				this.mainMenu();
 
@@ -369,8 +396,23 @@ public class AccountFundTransfer implements UserService {
 	}
 
 	@Override
-	public void changePin() {
-		// TODO Auto-generated method stub
+	public void changePin(User user) {
+		print("Enter your old pin");
+		int oldPin = scanner.nextInt();
+		if (oldPin == user.getAccountPin()) {
+
+			print("enter new 6 digit pin");
+
+			int newPin = scanner.nextInt();
+			if (ValidateUser.checkLength(6, String.valueOf(newPin), false)) {
+
+				user.setAccountPin(newPin);
+				print("Your pin has updated successfully!!!");
+				this.mainMenu();
+
+			}
+
+		}
 
 	}
 
@@ -385,6 +427,39 @@ public class AccountFundTransfer implements UserService {
 
 		}
 		user.setHistory(msg + " on " + Utils.getTimeStamp() + "\n" + history);
+
+	}
+
+	@Override
+	public void checkAccount(User fromUser, User toUser) {
+		System.out.println("Enter Reciever account number You want to send Mony");
+		String accountNumber = scanner.next();
+		if (accountNumber.equalsIgnoreCase(fromUser.getAccountNumber())) {
+			System.out.println("You can not send money to own account!!");
+			this.mainMenu();
+
+		} else if (accountNumber.equalsIgnoreCase(toUser.getAccountNumber())) {
+			print("You are sending money to " + toUser.getUserName());
+			print("Enter amount you want to send");
+			int amount = scanner.nextInt();
+			print("enter 6 digit pin");
+			int pin = scanner.nextInt();
+			if (!ValidateUser.verifyPin(pin, fromUser)) {
+				print("Incorrect Pin");
+				this.mainMenu();
+			}
+			if (activeAcc == 1) {
+				this.FundTransfer(amount, pin, fromUser, toUser);
+
+			} else {
+				this.FundTransfer(amount, pin, toUser, fromUser);
+
+			}
+
+		} else {
+			System.out.println("This Account Number does not exists!!");
+			this.mainMenu();
+		}
 
 	}
 
